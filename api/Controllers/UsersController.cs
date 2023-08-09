@@ -95,8 +95,9 @@ public class UsersController : ControllerBase
               claims: new[] {
                 new Claim("id", user.Id)
               },
-              // expires: DateTime.Now.AddMinutes(30),
-              signingCredentials: creds);
+              expires: DateTime.Now.AddMinutes(30),
+              signingCredentials: creds
+            );
 
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
