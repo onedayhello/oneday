@@ -1,4 +1,5 @@
 using api.Models;
+using api.ExtensionMethods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ public class UsersController : ControllerBase
 {
 
     private IMongoCollection<User> usersCollection;
+    private IMongoCollection<RefreshToken> refreshTokenCollection; //only for creation of refresh tokens
     private readonly IConfiguration _config;
 
     private bool checkPassword(string password, string savedPasswordHash)
@@ -37,9 +39,33 @@ public class UsersController : ControllerBase
         return true;
     }
 
+    private RefreshToken generateRefreshToken(string userId)
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+
+        string token = Convert.ToBase64String(randomNumber);
+
+        var refreshToken = new RefreshToken{
+            UserId = userId,
+            Token = token,
+            ExpiresAt = DateTime.UtcNow.AddHours(24)
+        };
+
+        return refreshToken;
+    }
+
     public UsersController(IConfiguration config, MongoDbService mongoDbService)
     {
         usersCollection = mongoDbService.db.GetCollection<User>("users");
+
+        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
+        var ttlIndex = new CreateIndexModel<RefreshToken>(
+            Builders<RefreshToken>.IndexKeys.Ascending(x => x.ExpiresAt),
+            new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
+        );
+        refreshTokenCollection.Indexes.CreateOne(ttlIndex);
         _config = config;
     }
 
@@ -88,16 +114,20 @@ public class UsersController : ControllerBase
 
         if (checkPassword(loginRequest.Password, user.Password))
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = user.Id.GenerateJwt(_config["JWT:Key"]);
 
-            var token = new JwtSecurityToken(
-              claims: new[] {
-                new Claim("id", user.Id)
-              },
-              expires: DateTime.Now.AddMinutes(30),
-              signingCredentials: creds
-            );
+            await refreshTokenCollection.DeleteManyAsync(x => x.UserId == user.Id);
+            
+            var refreshToken = generateRefreshToken(user.Id);
+
+            await refreshTokenCollection.InsertOneAsync(refreshToken);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true
+            };
+
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
 
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
