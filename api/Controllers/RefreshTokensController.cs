@@ -1,10 +1,7 @@
 using api.Models;
+using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace api.Controllers;
 
@@ -17,11 +14,11 @@ public class RefreshTokensController : ControllerBase
 
     public RefreshTokensController(IConfiguration config, MongoDbService mongoDbService)
     {
-        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh_token");
+        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
         _config = config;
     }
 
-    private bool TokenExpired(RefreshToken token)
+    private bool TokenExpired(RefreshToken refreshToken)
     {
         //if expired delete from collection
         return true;
@@ -51,16 +48,7 @@ public class RefreshTokensController : ControllerBase
             return Unauthorized();
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var newToken = new JwtSecurityToken(
-            claims: new[] {
-            new Claim("id", refreshToken.UserId)
-            },
-            expires: DateTime.Now.AddMinutes(30),
-            signingCredentials: creds
-        );
+        var newToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
 
         return Ok(newToken);
     }

@@ -12,4 +12,7 @@ public class RefreshToken
     public string UserId { get; set; } = default!;
 
     public string Token { get; set; } = default!;
+
+    [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+    public DateTime ExpiresAt { get; set; }
 }
