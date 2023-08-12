@@ -2,6 +2,7 @@ using api.Models;
 using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace api.Controllers;
 
@@ -18,15 +19,22 @@ public class RefreshTokensController : ControllerBase
         _config = config;
     }
 
-    private bool TokenExpired(RefreshToken refreshToken)
+    private static bool TokenExpired(RefreshToken refreshToken)
     {
-        //if expired delete from collection
-        return true;
+        if (refreshToken.ExpiresAt <= DateTime.Now) {
+            return true;
+        }
+
+        return false;
     }
 
     private static bool TokensDontMatch(string token1, string token2)
     {
-        return true;
+        if (token1 != token2) {
+            return true;
+        }
+
+        return false;
     }
 
     [HttpPost("refresh-token")]
@@ -48,8 +56,8 @@ public class RefreshTokensController : ControllerBase
             return Unauthorized();
         }
 
-        var newToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
+        var newAccessToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
 
-        return Ok(newToken);
+        return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
     }
 }
