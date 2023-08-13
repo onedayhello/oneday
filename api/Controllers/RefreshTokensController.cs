@@ -40,25 +40,34 @@ public class RefreshTokensController : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshRequest)
     {
-        RefreshToken refreshToken = await refreshTokenCollection.Find(x => x.UserId == refreshRequest.UserId).FirstOrDefaultAsync();
 
-        bool isExpired = false;
-        bool dontMatch = false;
-
-        if (refreshToken != null )
+        if (Request.Cookies.TryGetValue("refreshToken", out string? val)) 
         {
-            isExpired = TokenExpired(refreshToken);
-            dontMatch = TokensDontMatch(refreshToken.Token, refreshRequest.Token);
-        }
+            string requestRefreshToken = val ?? "";
+            RefreshToken refreshToken = await refreshTokenCollection.Find(x => x.UserId == refreshRequest.UserId).FirstOrDefaultAsync();
 
-        if (refreshToken == null || isExpired || dontMatch)
+            bool isExpired = false;
+            bool dontMatch = false;
+
+            if (refreshToken != null )
+            {
+                isExpired = TokenExpired(refreshToken);
+                dontMatch = TokensDontMatch(refreshToken.Token, requestRefreshToken);
+            }
+
+            if (refreshToken == null || isExpired || dontMatch)
+            {
+                return Unauthorized();
+            }
+
+            var newAccessToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
+
+            return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
+        } 
+        else 
         {
             return Unauthorized();
         }
-
-        var newAccessToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
-
-        return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
     }
 
     [HttpPost("revoke-token")]
