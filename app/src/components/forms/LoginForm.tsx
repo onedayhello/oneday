@@ -22,13 +22,15 @@ const handleSubmit = async (
   { setSubmitting }: FormikHelpers<Values>,
   router: AppRouterInstance
 ) => {
-  const token = (await Auth.login(values)) as { text: string };
+  const token = await Auth.login(values);
 
   if (!token) {
-    alert("Could not log in");
+    alert("Invalid details, please try again");
   }
 
-  router.push("/dashboard");
+  if (token) {
+    router.push("/dashboard");
+  }
 };
 
 const validate = (values: Values): Errors => {

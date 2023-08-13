@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { ReactElement, ReactNode } from "react";
 import Graph from "./Graph";
