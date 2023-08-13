@@ -22,13 +22,18 @@ const Auth = {
 
     requestOptions.body = JSON.stringify(body);
 
-    const responseData = (await fetchRequest(url, requestOptions)) as {
-      text: string;
-    };
+    const responseData = await fetch(url, requestOptions);
 
-    localStorage.setItem("token", responseData.text);
+    if (!responseData || !responseData.ok) {
+        console.log("not ok")
+      return null;
+    }
 
-    console.log(responseData);
+    const token = await responseData.text();
+
+    localStorage.setItem("token", token);
+
+    console.log(token);
 
     return responseData;
   },
