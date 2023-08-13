@@ -1,6 +1,9 @@
+'use client';
+
+import { useEffect } from "react";
 import "./globals.css";
 import { Roboto, Alegreya } from "next/font/google";
-import Navbar from "@/components/navigation/Navbar";
+import { useRouter } from 'next/navigation'
 
 const inter = Alegreya({ subsets: ["latin"], variable: "--font-alegreya" });
 const roboto = Roboto({
@@ -19,21 +22,24 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+    const router = useRouter()
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+      // user not logged in
+    }    
+
+    // TODO: Call auth endpoint to check if token is still valid
+   
+    router.push('/dashboard')
+  });
+
   return (
-    <html lang="en">
-      <body
-        className={`flex flex-col min-h-screen px-4 pb-8 container mx-auto justify-center ${inter.variable} ${roboto.variable}`}
-      >
-        <Navbar />
-        {children}
-        <footer className="lg:px-12 flex justify-between">
-            <div className="flex flex-col gap-2 font-medium capitalize tracking-wider">
-                <div className="  ">PRIVACY & LEGAL</div>
-                <div className="">CONTACT</div>
-            </div>
-            <div>© 2023 - One Day, All rights reserved.</div>
-        </footer>
-      </body>
+    <html lang="en" className={`${inter.variable} ${roboto.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

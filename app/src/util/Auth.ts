@@ -1,37 +1,49 @@
 import fetchRequest from "./fetchRequest";
 
 interface RequestBody {
-    username : string;
-    password : string;
+  username: string;
+  password: string;
 }
 
-const headers  = new Headers();
-headers.append('Content-type', 'application/json');
+const headers = new Headers();
+headers.append("Content-type", "application/json");
 
 const requestOptions: RequestInit = {
-    method: 'POST',
-    headers: headers
-}
+  method: "POST",
+  headers: headers,
+};
 
 const Auth = {
-    login: async (body: RequestBody) => {
-        const url = 'https://localhost:7095/Users/login';
+  isLoggedIn: () => {
+    const token = localStorage.getItem("token");
+  },
+  login: async (body: RequestBody) => {
+    const url = "https://localhost:7095/Users/login";
 
-        requestOptions.body = JSON.stringify(body);
+    requestOptions.body = JSON.stringify(body);
 
-        const responseData = await fetchRequest(url, requestOptions);
+    const responseData = (await fetchRequest(url, requestOptions)) as {
+      text: string;
+    };
 
-        return responseData;
-    },
-    signup: async (body: RequestBody) => {
-        const url = 'https://localhost:7095/Users/signup';
+    localStorage.setItem("token", responseData.text);
 
-        requestOptions.body = JSON.stringify(body);
+    console.log(responseData);
 
-        const responseData = await fetchRequest(url, requestOptions);
+    return responseData;
+  },
+  logout: () => {
+    localStorage.removeItem("token");
+  },
+  signup: async (body: RequestBody) => {
+    const url = "https://localhost:7095/Users/signup";
 
-        return responseData;
-    }
-}
+    requestOptions.body = JSON.stringify(body);
+
+    const responseData = await fetchRequest(url, requestOptions);
+
+    return responseData;
+  },
+};
 
 export default Auth;

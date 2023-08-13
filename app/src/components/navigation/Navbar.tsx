@@ -6,7 +6,7 @@ const Navbar = () => {
     const router = useRouter();
 
     return (
-        <nav className="lg:px-12 flex items-center justify-between py-8">
+        <nav className="flex items-center justify-between py-8">
         <h1 className="text-3xl text-[#08251C] font-bold font-sans">one day</h1>
         <div className="hidden lg:flex ml-auto mr-14 gap-12">
           <span className="text-xl tracking-wide">Mindfulness Journal</span>
