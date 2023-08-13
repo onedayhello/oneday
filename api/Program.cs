@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MongoDbService>(sp =>
 {
     var mongoDBUri = builder.Configuration["MongoDB:URI"];
+    //var mongoDBUri = "mongodb://localhost:27017";
     string mongoDBName = "oneday";
     return new MongoDbService(mongoDBUri, mongoDBName);
 });
