@@ -60,4 +60,12 @@ public class RefreshTokensController : ControllerBase
 
         return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
     }
+
+    [HttpPost("revoke-token")]
+    public async Task<IActionResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
+    {
+        await refreshTokenCollection.DeleteManyAsync(x => x.UserId == revokeTokenRequest.UserId);
+
+        return Ok();
+    }
 }
