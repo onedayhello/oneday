@@ -1,5 +1,10 @@
+'use client'
+
 import { ReactElement, ReactNode } from "react";
 import Graph from "./Graph";
+import Link from "next/link";
+import Auth from "@/util/Auth";
+import { useRouter } from "next/navigation";
 
 const NavbarItem = ({
   active,
@@ -75,6 +80,8 @@ const SubpanelRecentJournalsItem = () => {
 };
 
 const App = () => {
+  const router = useRouter();
+
   return (
     <div className="flex">
       <aside className="flex shrink-0 flex-col content-center justify-between h-screen sticky top-0 p-10">
@@ -87,7 +94,16 @@ const App = () => {
         </div>
         <div>
           <NavbarItem>Help & Information</NavbarItem>
-          <NavbarItem>Logout</NavbarItem>
+          <NavbarItem>
+            <Link
+              href="/"
+              onClick={() => {
+                Auth.logout();
+              }}
+            >
+              Logout{" "}
+            </Link>
+          </NavbarItem>
         </div>
       </aside>
       <main className="grid grid-cols-2 p-10 w-full gap-6">

@@ -1,10 +1,12 @@
 import Navbar from "@/components/navigation/Navbar";
+import { useEffect } from "react";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <>
       <div
