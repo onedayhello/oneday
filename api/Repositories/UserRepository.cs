@@ -44,9 +44,10 @@ namespace api.Repositories
             return user;
         }
 
-        public Task<User> GetUserByUsernameAsync(string username)
+        public async Task<User> GetUserByUsernameAsync(string username)
         {
-            throw new NotImplementedException();
+            User user = await _usersCollection.Find(x => x.Username == username).FirstOrDefaultAsync();
+            return user;
         }
     }
 }
