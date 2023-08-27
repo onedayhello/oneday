@@ -17,6 +17,19 @@ public class UsersController : ControllerBase
     private IMongoCollection<RefreshToken> refreshTokenCollection; //only for creation of refresh tokens
     private readonly IConfiguration _config;
 
+    public UsersController(IConfiguration config, MongoDbService mongoDbService)
+    {
+        usersCollection = mongoDbService.db.GetCollection<User>("users");
+
+        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
+        var ttlIndex = new CreateIndexModel<RefreshToken>(
+            Builders<RefreshToken>.IndexKeys.Ascending(x => x.ExpiresAt),
+            new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
+        );
+        refreshTokenCollection.Indexes.CreateOne(ttlIndex);
+        _config = config;
+    }
+
     private bool checkPassword(string password, string savedPasswordHash)
     {
         /* Fetch the stored value */
@@ -51,19 +64,6 @@ public class UsersController : ControllerBase
         };
 
         return refreshToken;
-    }
-
-    public UsersController(IConfiguration config, MongoDbService mongoDbService)
-    {
-        usersCollection = mongoDbService.db.GetCollection<User>("users");
-
-        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
-        var ttlIndex = new CreateIndexModel<RefreshToken>(
-            Builders<RefreshToken>.IndexKeys.Ascending(x => x.ExpiresAt),
-            new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
-        );
-        refreshTokenCollection.Indexes.CreateOne(ttlIndex);
-        _config = config;
     }
 
     [HttpGet("{id}")]
