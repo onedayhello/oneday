@@ -28,9 +28,9 @@ namespace api.Repositories
             await _refreshTokenCollection.InsertOneAsync(refreshToken);
         }
 
-        public Task CreateUserAsync(User user)
+        public async Task CreateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            await _usersCollection.InsertOneAsync(user);
         }
 
         public async Task DeleteRefreshTokenAsync(string userId)
@@ -38,9 +38,10 @@ namespace api.Repositories
             await _refreshTokenCollection.DeleteManyAsync(x => x.UserId == userId);
         }
 
-        public Task<User> GetUserByIdAsync(string Id)
+        public async Task<User> GetUserByIdAsync(string Id)
         {
-            throw new NotImplementedException();
+            User user = await _usersCollection.Find(x => x.Id == Id).FirstOrDefaultAsync();
+            return user;
         }
 
         public Task<User> GetUserByUsernameAsync(string username)
