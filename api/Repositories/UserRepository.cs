@@ -8,11 +8,9 @@ namespace api.Repositories
     {
         private IMongoCollection<User> _usersCollection;
         private IMongoCollection<RefreshToken> _refreshTokenCollection;
-        private readonly IConfiguration _config;
-        
-        public UserRepository(IConfiguration config, MongoDbService mongoDbService)
+
+        public UserRepository(MongoDbService mongoDbService)
         {
-            _config = config;
 
             _usersCollection = mongoDbService.db.GetCollection<User>("users");
             _refreshTokenCollection = mongoDbService.db
