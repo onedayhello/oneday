@@ -33,9 +33,9 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
-        public Task DeleteRefreshTokenAsync(string userId)
+        public async Task DeleteRefreshTokenAsync(string userId)
         {
-            throw new NotImplementedException();
+            await _refreshTokenCollection.DeleteManyAsync(x => x.UserId == userId);
         }
 
         public Task<User> GetUserByIdAsync(string Id)
