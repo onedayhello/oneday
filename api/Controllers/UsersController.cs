@@ -13,24 +13,12 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-
-    private IMongoCollection<User> usersCollection;
-    private IMongoCollection<RefreshToken> refreshTokenCollection; //only for creation of refresh tokens
     private readonly IConfiguration _config;
     private readonly IUserRepository _userRepository;
 
     public UsersController(IConfiguration config, MongoDbService mongoDbService, IUserRepository userRepository)
     {
-        usersCollection = mongoDbService.db.GetCollection<User>("users");
-
-        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
-        var ttlIndex = new CreateIndexModel<RefreshToken>(
-            Builders<RefreshToken>.IndexKeys.Ascending(x => x.ExpiresAt),
-            new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
-        );
-        refreshTokenCollection.Indexes.CreateOne(ttlIndex);
         _config = config;
-
         _userRepository = userRepository;
     }
 
@@ -48,7 +36,7 @@ public class UsersController : ControllerBase
         /* Compare the results */
         if (Enumerable.Range(0, 20).Any(i => hashBytes[i + 16] != hash[i]))
         {
-            throw new UnauthorizedAccessException();
+            return false;
         }
         return true;
     }
@@ -70,14 +58,7 @@ public class UsersController : ControllerBase
         return refreshToken;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserAsync(string Id)
-    {
-        //var user = await usersCollection.Find(x => x.Id == Id).FirstOrDefaultAsync();
-        var user = await _userRepository.GetUserByIdAsync(Id);
-        return Ok(user);
-    }
-
+    [AllowAnonymous]
     [HttpPost("signup")]
     public async Task<IActionResult> CreateUser(UserCreateRequest userRequest)
     {
@@ -98,7 +79,7 @@ public class UsersController : ControllerBase
             Password = savedPasswordHash
         };
 
-        await usersCollection.InsertOneAsync(user);
+        await _userRepository.CreateUserAsync(user);
 
         return Ok(user);
     }
@@ -107,22 +88,17 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginUser(UserLoginRequest loginRequest)
     {
-        var user = await usersCollection.Find(x => x.Username == loginRequest.Username).FirstOrDefaultAsync();
+        User user = await _userRepository.GetUserByUsernameAsync(loginRequest.Username);
 
-        if (user == null)
-        {
-            return Unauthorized();
-        }
-
-        if (checkPassword(loginRequest.Password, user.Password))
+        if ((user != null) && checkPassword(loginRequest.Password, user.Password))
         {
             var token = user.Id.GenerateJwt(_config["JWT:Key"]);
 
-            await refreshTokenCollection.DeleteManyAsync(x => x.UserId == user.Id);
+            await _userRepository.DeleteRefreshTokenAsync(user.Id);
             
             var refreshToken = generateRefreshToken(user.Id);
 
-            await refreshTokenCollection.InsertOneAsync(refreshToken);
+            await _userRepository.CreateRefreshTokenAsync(refreshToken);
 
             var cookieOptions = new CookieOptions
             {
@@ -134,6 +110,6 @@ public class UsersController : ControllerBase
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        throw new Exception();
+        return Unauthorized();
     }
 }
