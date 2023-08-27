@@ -9,6 +9,7 @@ namespace api.Repositories
         private IMongoCollection<User> _usersCollection;
         private IMongoCollection<RefreshToken> _refreshTokenCollection;
         private readonly IConfiguration _config;
+        
         public UserRepository(IConfiguration config, MongoDbService mongoDbService)
         {
             _config = config;

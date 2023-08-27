@@ -1,4 +1,6 @@
 using System.Text;
+using api.Interfaces;
+using api.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -24,13 +26,16 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<MongoDbService>(sp =>
+
+builder.Services.AddScoped<MongoDbService>(sp =>
 {
     var mongoDBUri = builder.Configuration["MongoDB:URI"];
     //var mongoDBUri = "mongodb://localhost:27017";
     string mongoDBName = "oneday";
     return new MongoDbService(mongoDBUri, mongoDBName);
 });
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

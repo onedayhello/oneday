@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
+using api.Interfaces;
 
 namespace api.Controllers;
 
@@ -16,8 +17,9 @@ public class UsersController : ControllerBase
     private IMongoCollection<User> usersCollection;
     private IMongoCollection<RefreshToken> refreshTokenCollection; //only for creation of refresh tokens
     private readonly IConfiguration _config;
+    private readonly IUserRepository _userRepository;
 
-    public UsersController(IConfiguration config, MongoDbService mongoDbService)
+    public UsersController(IConfiguration config, MongoDbService mongoDbService, IUserRepository userRepository)
     {
         usersCollection = mongoDbService.db.GetCollection<User>("users");
 
@@ -28,6 +30,8 @@ public class UsersController : ControllerBase
         );
         refreshTokenCollection.Indexes.CreateOne(ttlIndex);
         _config = config;
+
+        _userRepository = userRepository;
     }
 
     private bool checkPassword(string password, string savedPasswordHash)
@@ -69,7 +73,8 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserAsync(string Id)
     {
-        var user = await usersCollection.Find(x => x.Id == Id).FirstOrDefaultAsync();
+        //var user = await usersCollection.Find(x => x.Id == Id).FirstOrDefaultAsync();
+        var user = await _userRepository.GetUserByIdAsync(Id);
         return Ok(user);
     }
 
