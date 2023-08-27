@@ -1,18 +1,25 @@
 using api.Interfaces;
 using api.Models;
+using MongoDB.Driver;
 
 namespace api.Repositories
 {
     public class RefreshTokenRepository : IRefreshTokenRepository
     {
-        public Task DeleteRefreshTokenAsync(string Id)
+        private readonly IMongoCollection<RefreshToken> _refreshTokenCollection;
+        public RefreshTokenRepository(MongoDbService mongoDbService) {
+            _refreshTokenCollection = mongoDbService.db
+                .GetCollection<RefreshToken>("refresh-tokens");
+        }
+        public async Task DeleteRefreshTokenAsync(string Id)
         {
-            throw new NotImplementedException();
+            await _refreshTokenCollection.DeleteManyAsync(x => x.UserId == Id);
         }
 
-        public Task<RefreshToken> GetRefreshTokenByUserIdAsync(string userId)
+        public async Task<RefreshToken> GetRefreshTokenByUserIdAsync(string userId)
         {
-            throw new NotImplementedException();
+            RefreshToken refreshToken = await _refreshTokenCollection.Find(x => x.UserId == userId).FirstOrDefaultAsync();
+            return refreshToken;
         }
     }
 }

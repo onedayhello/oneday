@@ -6,8 +6,8 @@ namespace api.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private IMongoCollection<User> _usersCollection;
-        private IMongoCollection<RefreshToken> _refreshTokenCollection;
+        private readonly IMongoCollection<User> _usersCollection;
+        private readonly IMongoCollection<RefreshToken> _refreshTokenCollection;
 
         public UserRepository(MongoDbService mongoDbService)
         {

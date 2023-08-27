@@ -16,7 +16,7 @@ public class UsersController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IUserRepository _userRepository;
 
-    public UsersController(IConfiguration config, MongoDbService mongoDbService, IUserRepository userRepository)
+    public UsersController(IConfiguration config, IUserRepository userRepository)
     {
         _config = config;
         _userRepository = userRepository;

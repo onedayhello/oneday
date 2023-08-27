@@ -37,6 +37,8 @@ builder.Services.AddScoped<MongoDbService>(sp =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

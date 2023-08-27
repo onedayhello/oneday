@@ -3,6 +3,7 @@ using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
+using api.Interfaces;
 
 namespace api.Controllers;
 
@@ -10,12 +11,12 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class RefreshTokensController : ControllerBase
 {
-    private IMongoCollection<RefreshToken> refreshTokenCollection;
+    private readonly IRefreshTokenRepository _refreshTokenRepository ;
     private readonly IConfiguration _config;
 
-    public RefreshTokensController(IConfiguration config, MongoDbService mongoDbService)
+    public RefreshTokensController(IConfiguration config, IRefreshTokenRepository refreshTokenRepository)
     {
-        refreshTokenCollection = mongoDbService.db.GetCollection<RefreshToken>("refresh-tokens");
+        _refreshTokenRepository = refreshTokenRepository;
         _config = config;
     }
 
@@ -37,14 +38,15 @@ public class RefreshTokensController : ControllerBase
         return false;
     }
 
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshRequest)
+    [HttpPost("refresh-access-token")]
+    public async Task<IActionResult> RefreshAccessToken(RefreshTokenRequest refreshRequest)
     {
 
         if (Request.Cookies.TryGetValue("refreshToken", out string? val)) 
         {
             string requestRefreshToken = val ?? "";
-            RefreshToken refreshToken = await refreshTokenCollection.Find(x => x.UserId == refreshRequest.UserId).FirstOrDefaultAsync();
+            
+            RefreshToken refreshToken = await _refreshTokenRepository.GetRefreshTokenByUserIdAsync(refreshRequest.UserId);
 
             bool isExpired = false;
             bool dontMatch = false;
@@ -63,17 +65,15 @@ public class RefreshTokensController : ControllerBase
             var newAccessToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
 
             return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
-        } 
-        else 
-        {
-            return Unauthorized();
         }
+
+        return Unauthorized();
     }
 
-    [HttpPost("revoke-token")]
-    public async Task<IActionResult> RevokeToken(RevokeTokenRequest revokeTokenRequest)
+    [HttpPost("revoke-refresh-token")]
+    public async Task<IActionResult> RevokeRefreshToken(RevokeTokenRequest revokeTokenRequest)
     {
-        await refreshTokenCollection.DeleteManyAsync(x => x.UserId == revokeTokenRequest.UserId);
+        await _refreshTokenRepository.DeleteRefreshTokenAsync(revokeTokenRequest.UserId);
 
         return Ok();
     }
