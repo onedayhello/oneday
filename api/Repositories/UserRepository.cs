@@ -1,17 +1,31 @@
 using api.Interfaces;
 using api.Models;
+using MongoDB.Driver;
 
 namespace api.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public UserRepository()
+        private IMongoCollection<User> _usersCollection;
+        private IMongoCollection<RefreshToken> _refreshTokenCollection;
+        private readonly IConfiguration _config;
+        public UserRepository(IConfiguration config, MongoDbService mongoDbService)
         {
-            
+            _config = config;
+
+            _usersCollection = mongoDbService.db.GetCollection<User>("users");
+            _refreshTokenCollection = mongoDbService.db
+                .GetCollection<RefreshToken>("refresh-tokens");
         }
-        public Task CreateRefreshTokenAsync(RefreshToken refreshToken)
+        public async Task CreateRefreshTokenAsync(RefreshToken refreshToken)
         {
-            throw new NotImplementedException();
+            var ttlIndex = new CreateIndexModel<RefreshToken>(
+                Builders<RefreshToken>.IndexKeys.Ascending(x => x.ExpiresAt),
+                new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
+            );
+            _refreshTokenCollection.Indexes.CreateOne(ttlIndex);
+
+            await _refreshTokenCollection.InsertOneAsync(refreshToken);
         }
 
         public Task CreateUserAsync(User user)
