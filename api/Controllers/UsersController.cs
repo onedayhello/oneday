@@ -52,26 +52,26 @@ public class UsersController : ControllerBase
     {
         User user = await _userRepository.GetUserByUsernameAsync(loginRequest.Username);
 
-        if ((user != null) && loginRequest.Password.CheckPassword(user.Password))
+        if (user == null || !loginRequest.Password.CheckPassword(user.Password))
         {
-            var token = user.Id.GenerateJwt(_config["JWT:Key"]);
-
-            await _userRepository.DeleteRefreshTokenAsync(user.Id);
-
-            RefreshToken refreshToken = user.Id.GenerateRefreshToken();
-
-            await _userRepository.CreateRefreshTokenAsync(refreshToken);
-
-            var cookieOptions = new CookieOptions
-            {
-                Path = "/", HttpOnly = true, Expires = DateTime.Now.AddDays(1)
-            };
-
-            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
-
-            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            return Unauthorized();
         }
 
-        return Unauthorized();
+        var token = user.Id.GenerateJwt(_config["JWT:Key"]);
+
+        await _userRepository.DeleteRefreshTokenAsync(user.Id);
+
+        RefreshToken refreshToken = user.Id.GenerateRefreshToken();
+
+        await _userRepository.CreateRefreshTokenAsync(refreshToken);
+
+        var cookieOptions = new CookieOptions
+        {
+            Path = "/", HttpOnly = true, Expires = DateTime.Now.AddDays(1)
+        };
+
+        Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+
+        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
 }
