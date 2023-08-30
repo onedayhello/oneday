@@ -1,7 +1,6 @@
 using api.Models;
 using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
 using api.Interfaces;
 
@@ -20,24 +19,6 @@ public class RefreshTokensController : ControllerBase
         _config = config;
     }
 
-    private static bool TokenExpired(RefreshToken refreshToken)
-    {
-        if (refreshToken.ExpiresAt <= DateTime.Now) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool TokensDontMatch(string token1, string token2)
-    {
-        if (token1 != token2) {
-            return true;
-        }
-
-        return false;
-    }
-
     [HttpPost("refresh-access-token")]
     public async Task<IActionResult> RefreshAccessToken(RefreshTokenRequest refreshRequest)
     {
@@ -53,8 +34,8 @@ public class RefreshTokensController : ControllerBase
 
             if (refreshToken != null )
             {
-                isExpired = TokenExpired(refreshToken);
-                dontMatch = TokensDontMatch(refreshToken.Token, requestRefreshToken);
+                isExpired = refreshToken.ExpiresAt <= DateTime.Now;
+                dontMatch = !String.Equals(refreshToken.Token, requestRefreshToken);
             }
 
             if (refreshToken == null || isExpired || dontMatch)
