@@ -25,6 +25,14 @@ public class UsersController : ControllerBase
     [HttpPost("signup")]
     public async Task<IActionResult> CreateUser(UserCreateRequest userRequest)
     {
+        var existingUser = await _userRepository.GetUserByUsernameAsync(userRequest.Username);
+
+        if (existingUser != null)
+        {
+            return Conflict(
+                new {message = "username unavailable"}
+            );
+        }
         string savedPasswordHash = userRequest.Password.HashPassword();
 
         var user = new User
