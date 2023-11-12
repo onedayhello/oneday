@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Formik, Form, Field, FormikHelpers } from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import Auth from "@/util/Auth";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface Values {
   username: string;
@@ -20,12 +21,13 @@ interface Errors {
 const handleSubmit = async (
   values: Values,
   { setSubmitting }: FormikHelpers<Values>,
-  router: AppRouterInstance
+  router: AppRouterInstance,
+  setLoginError: Dispatch<SetStateAction<boolean>>
 ) => {
   const token = await Auth.login(values);
 
   if (!token) {
-    alert("Invalid details, please try again");
+    setLoginError(true);
   }
 
   if (token) {
@@ -51,6 +53,7 @@ const validate = (values: Values): Errors => {
 
 const LoginForm = () => {
   const router = useRouter();
+  const [loginError, setLoginError] = useState(false);
 
   return (
     <div className="flex flex-col justify-center">
@@ -60,7 +63,9 @@ const LoginForm = () => {
       <Formik
         initialValues={{ username: "", password: "" }}
         validate={validate}
-        onSubmit={(values, actions) => handleSubmit(values, actions, router)}
+        onSubmit={(values, actions) =>
+          handleSubmit(values, actions, router, setLoginError)
+        }
       >
         {({ errors, touched }) => (
           <Form className="flex flex-col justify-center">
@@ -87,6 +92,11 @@ const LoginForm = () => {
                   : undefined
               }
             />
+            {loginError && (
+              <div className="text-sm text-gray-400">
+                Invalid login details, please try again
+              </div>
+            )}
 
             <button
               type="submit"

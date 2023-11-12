@@ -1,9 +1,7 @@
 "use client";
 
-import { ReactElement, ReactNode } from "react";
+import { ReactNode } from "react";
 import Graph from "./Graph";
-import Link from "next/link";
-import Auth from "@/util/Auth";
 import { useRouter } from "next/navigation";
 
 const Subpanel = ({
@@ -65,7 +63,7 @@ const App = () => {
   const router = useRouter();
 
   return (
-    <>
+    <div className="grid grid-cols-2 gap-6">
       <div className="flex flex-col gap-6">
         <Subpanel title="Your tasks" subtitle="Tasks to complete today">
           <SubpanelYourTasksItem></SubpanelYourTasksItem>
@@ -92,7 +90,7 @@ const App = () => {
           </div>
         </Subpanel>
       </div>
-    </>
+    </div>
   );
 };
 
