@@ -6,24 +6,6 @@ import Link from "next/link";
 import Auth from "@/util/Auth";
 import { useRouter } from "next/navigation";
 
-const NavbarItem = ({
-  active,
-  children,
-}: {
-  active?: boolean;
-  children: ReactNode;
-}) => {
-  return (
-    <div
-      className={`text-[#8F8A86] p-2 rounded ${
-        active ? "bg-[#F1F4ED] text-[#575757]" : ""
-      } `}
-    >
-      <div>{children}</div>
-    </div>
-  );
-};
-
 const Subpanel = ({
   title,
   subtitle,
@@ -83,58 +65,34 @@ const App = () => {
   const router = useRouter();
 
   return (
-    <div className="flex">
-      <aside className="flex shrink-0 flex-col content-center justify-between h-screen sticky top-0 p-10">
-        <h1 className="text-3xl text-[#08251C] font-bold font-sans">one day</h1>
-        <div className="flex flex-col gap-3">
-          <NavbarItem active={true}>Dashboard</NavbarItem>
-          <NavbarItem>Your tasks </NavbarItem>
-          <NavbarItem>Mood tracker</NavbarItem>
-          <NavbarItem>Recent journals</NavbarItem>
-        </div>
-        <div>
-          <NavbarItem>Help & Information</NavbarItem>
-          <NavbarItem>
-            <Link
-              href="/"
-              onClick={() => {
-                Auth.logout();
-              }}
-            >
-              Logout{" "}
-            </Link>
-          </NavbarItem>
-        </div>
-      </aside>
-      <main className="grid grid-cols-2 p-10 w-full gap-6">
-        <div className="flex flex-col gap-6">
-          <Subpanel title="Your tasks" subtitle="Tasks to complete today">
-            <SubpanelYourTasksItem></SubpanelYourTasksItem>
-            <SubpanelYourTasksItem></SubpanelYourTasksItem>
-          </Subpanel>
-          <Subpanel
-            title="Mood tracker"
-            subtitle="Track your mood with questionnaires"
-            button="Month"
-          >
-            <Graph />
-          </Subpanel>
-        </div>
-        <div>
-          <Subpanel
-            title="Recently journals"
-            subtitle="Journals to help improve mindfulness"
-            button="View all"
-          >
-            <div className="flex flex-col gap-3">
-              <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
-              <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
-              <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
-            </div>
-          </Subpanel>
-        </div>
-      </main>
-    </div>
+    <>
+      <div className="flex flex-col gap-6">
+        <Subpanel title="Your tasks" subtitle="Tasks to complete today">
+          <SubpanelYourTasksItem></SubpanelYourTasksItem>
+          <SubpanelYourTasksItem></SubpanelYourTasksItem>
+        </Subpanel>
+        <Subpanel
+          title="Mood tracker"
+          subtitle="Track your mood with questionnaires"
+          button="Month"
+        >
+          <Graph />
+        </Subpanel>
+      </div>
+      <div>
+        <Subpanel
+          title="Recently journals"
+          subtitle="Journals to help improve mindfulness"
+          button="View all"
+        >
+          <div className="flex flex-col gap-3">
+            <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
+            <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
+            <SubpanelRecentJournalsItem></SubpanelRecentJournalsItem>
+          </div>
+        </Subpanel>
+      </div>
+    </>
   );
 };
 

@@ -1,4 +1,7 @@
+'use client'
+
 import Navbar from "@/components/navigation/Navbar";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AuthLayout({
@@ -6,6 +9,20 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+      // user not logged in
+    }
+
+    // TODO: Call auth endpoint to check if token is still valid
+
+    router.push("/dashboard");
+  });
 
   return (
     <>
