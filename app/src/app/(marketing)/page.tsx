@@ -66,7 +66,7 @@ export default function Home() {
 
         <div className="rounded-2xl lg:p-20 grid lg:grid-cols-8 gap-12 bg-[#F8F9F8]">
           <div className="lg:col-span-3">
-            <h2 className="text-4xl mb-2">Mindfulness Journal for you</h2>
+            <h2 className="text-4xl mb-2">Mindfulness Journal</h2>
             <div>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
