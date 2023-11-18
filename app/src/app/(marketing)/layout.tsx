@@ -27,7 +27,7 @@ export default function AuthLayout({
   return (
     <>
       <div
-        className={`flex flex-col min-h-screen  pb-8 lg:px-12 container mx-auto`}
+        className={`px-4 flex flex-col min-h-screen  pb-8 lg:px-12 container mx-auto`}
       >
         <Navbar />
         {children}
