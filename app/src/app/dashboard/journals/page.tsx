@@ -1,3 +1,10 @@
+"use client";
+
+import { Button } from "@/components/button/Button";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "next/link";
+
 const RecentJournalsItem = () => {
   return (
     <div className="flex  justify-between rounded-lg p-4 hover:bg-[#F4F4F3] border">
@@ -16,20 +23,27 @@ const RecentJournalsItem = () => {
   );
 };
 
+const Tiptap = () => {
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: "<p>Hello World! 🌎️</p>",
+
+    editorProps: {
+      attributes: {
+        class: "border rounded-lg p-3",
+      },
+    },
+  });
+
+  return <EditorContent editor={editor} />;
+};
+
 const Journal = () => {
   return (
     <div className="flex flex-col gap-3">
-      <div>
-        <h1 className="text-2xl">Journals</h1>
-        <hr />
-      </div>
-
-      <div className="flex mt-4 gap-2">
-        <div className="p-2 px-4 border rounded-full">New Entry</div>
-        <div className="bg-[#454545] text-white p-2 px-4  rounded-full">
-          Past Entries
-        </div>
-      </div>
+      <Link href="/dashboard/journals/new-entry">
+        <Button>New Entry</Button>
+      </Link>
 
       <div className="flex flex-col gap-2">
         <RecentJournalsItem />
