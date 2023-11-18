@@ -55,16 +55,16 @@ export default function Home() {
       </section>
 
       <section>
-        <div className="flex gap-4 mb-4">
+        <div className="flex gap-2 mb-4">
           <div className="inline-block bg-[#454545] text-white px-4 py-2 rounded-full">
             Mindfulness Journal
           </div>
           <div className="inline-block border px-4 py-2 rounded-full">
-            Mindfulness Journal
+            Mood Tracker
           </div>
         </div>
 
-        <div className="rounded-2xl lg:p-20 grid lg:grid-cols-8 gap-12 bg-[#F8F9F8]">
+        <div className="rounded-2xl p-16 lg:p-20 grid lg:grid-cols-8 gap-12 bg-[#F8F9F8]">
           <div className="lg:col-span-3">
             <h2 className="text-4xl mb-2">Mindfulness Journal</h2>
             <div>
