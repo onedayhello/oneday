@@ -1,5 +1,5 @@
 using api.Data.Models;
-using api.Interfaces;
+using api.Data.Repositories.Interfaces;
 using MongoDB.Driver;
 
 namespace api.Data.Repositories

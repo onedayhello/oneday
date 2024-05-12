@@ -1,8 +1,8 @@
 using api.Data.Models;
 
-namespace api.Interfaces
+namespace api.Data.Repositories.Interfaces
 {
-    public interface IUserRepository 
+    public interface IUserRepository
     {
         Task<User> GetUserByUsernameAsync(string username);
         Task<User> GetUserByIdAsync(string Id);

@@ -1,10 +1,10 @@
 using api.Data.Models;
 
-namespace api.Interfaces
+namespace api.Data.Repositories.Interfaces
 {
     public interface IRefreshTokenRepository
     {
         Task<RefreshToken> GetRefreshTokenByUserIdAsync(string userId);
-        Task  DeleteRefreshTokenAsync(string Id);
+        Task DeleteRefreshTokenAsync(string Id);
     }
 }
