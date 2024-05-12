@@ -1,4 +1,4 @@
-namespace api.Models;
+namespace api.Data.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 public class User

@@ -1,9 +1,9 @@
-using api.Models;
 using api.ExtensionMethods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using api.Interfaces;
+using api.Data.Models;
 
 namespace api.Controllers;
 

@@ -1,13 +1,14 @@
+using api.Data.Models;
 using api.Interfaces;
-using api.Models;
 using MongoDB.Driver;
 
-namespace api.Repositories
+namespace api.Data.Repositories
 {
     public class RefreshTokenRepository : IRefreshTokenRepository
     {
         private readonly IMongoCollection<RefreshToken> _refreshTokenCollection;
-        public RefreshTokenRepository(MongoDbService mongoDbService) {
+        public RefreshTokenRepository(MongoDbService mongoDbService)
+        {
             _refreshTokenCollection = mongoDbService.db
                 .GetCollection<RefreshToken>("refresh-tokens");
         }

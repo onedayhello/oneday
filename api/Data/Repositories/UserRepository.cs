@@ -1,8 +1,8 @@
+using api.Data.Models;
 using api.Interfaces;
-using api.Models;
 using MongoDB.Driver;
 
-namespace api.Repositories
+namespace api.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
