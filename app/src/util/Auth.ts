@@ -11,6 +11,7 @@ headers.append("Content-type", "application/json");
 const requestOptions: RequestInit = {
   method: "POST",
   headers: headers,
+  credentials: "include"
 };
 
 const Auth = {

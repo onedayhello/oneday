@@ -65,6 +65,8 @@ namespace api.Services
 
             var cookieOptions = new CookieOptions
             {
+                IsEssential = true,
+                Secure = false,
                 Path = "/",
                 HttpOnly = true,
                 Expires = DateTime.Now.AddDays(1)
