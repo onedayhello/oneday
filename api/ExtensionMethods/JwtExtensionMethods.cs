@@ -24,21 +24,4 @@ public static class JwtExtensions
 
         return token;
     }
-
-    public static RefreshToken GenerateRefreshToken(this string userId)
-    {
-        var randomNumber = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-
-        string token = Convert.ToBase64String(randomNumber);
-
-        var refreshToken = new RefreshToken{
-            UserId = userId,
-            Token = token,
-            ExpiresAt = DateTime.UtcNow.AddHours(24)
-        };
-
-        return refreshToken;
-    }
 }

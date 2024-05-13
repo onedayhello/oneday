@@ -1,9 +1,5 @@
-using api.ExtensionMethods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using api.Data.Models;
-using api.Data.Repositories.Interfaces;
 using api.Services.Interfaces;
 
 namespace api.Controllers;
@@ -13,14 +9,10 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IConfiguration _config;
-    private readonly IUserRepository _userRepository;
     private readonly IUsersService _usersService;
 
-    public UsersController(IConfiguration config, IUserRepository userRepository, IUsersService usersService)
+    public UsersController(IUsersService usersService)
     {
-        _config = config;
-        _userRepository = userRepository;
         _usersService = usersService;
     }
 
@@ -35,28 +27,6 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginUser(UserLoginRequest loginRequest)
     {
-        User user = await _userRepository.GetUserByUsernameAsync(loginRequest.Username);
-
-        if (user == null || !loginRequest.Password.CheckPassword(user.Password))
-        {
-            return Unauthorized();
-        }
-
-        var token = user.Id.GenerateJwt(_config["JWT:Key"]);
-
-        await _userRepository.DeleteRefreshTokenAsync(user.Id);
-
-        RefreshToken refreshToken = user.Id.GenerateRefreshToken();
-
-        await _userRepository.CreateRefreshTokenAsync(refreshToken);
-
-        var cookieOptions = new CookieOptions
-        {
-            Path = "/", HttpOnly = true, Expires = DateTime.Now.AddDays(1)
-        };
-
-        Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
-
-        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+        return await _usersService.LoginUser(loginRequest);
     }
 }
