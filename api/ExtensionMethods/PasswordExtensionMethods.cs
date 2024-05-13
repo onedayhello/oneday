@@ -21,18 +21,4 @@ public static class PasswordExtensions
         }
         return true;
     }
-
-    public static string HashPassword(this string password)
-    {
-        var salt = new byte[16];
-        RandomNumberGenerator.Create().GetBytes(salt);
-        var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000, HashAlgorithmName.SHA1);
-        var hash = pbkdf2.GetBytes(20);
-        var hashBytes = new byte[36];
-
-        Array.Copy(salt, 0, hashBytes, 0, 16);
-        Array.Copy(hash, 0, hashBytes, 16, 20);
-
-        return Convert.ToBase64String(hashBytes);
-    }
 }

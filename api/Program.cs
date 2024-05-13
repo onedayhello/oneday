@@ -1,6 +1,8 @@
 using System.Text;
 using api.Data.Repositories;
 using api.Data.Repositories.Interfaces;
+using api.Processes;
+using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +40,9 @@ builder.Services.AddScoped<MongoDbService>(sp =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+ServicesDI.RegisterServices(builder.Services);
+ProcessesDI.RegisterProcesses(builder.Services);
 
 builder.Services.AddAuthentication(options =>
 {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using api.Data.Models;
 using api.Data.Repositories.Interfaces;
+using api.Services.Interfaces;
 
 namespace api.Controllers;
 
@@ -14,36 +15,20 @@ public class UsersController : ControllerBase
 {
     private readonly IConfiguration _config;
     private readonly IUserRepository _userRepository;
+    private readonly IUsersService _usersService;
 
-    public UsersController(IConfiguration config, IUserRepository userRepository)
+    public UsersController(IConfiguration config, IUserRepository userRepository, IUsersService usersService)
     {
         _config = config;
         _userRepository = userRepository;
+        _usersService = usersService;
     }
 
     [AllowAnonymous]
     [HttpPost("signup")]
     public async Task<IActionResult> CreateUser(UserCreateRequest userRequest)
     {
-        var existingUser = await _userRepository.GetUserByUsernameAsync(userRequest.Username);
-
-        if (existingUser != null)
-        {
-            return Conflict(
-                new {message = "username unavailable"}
-            );
-        }
-        string savedPasswordHash = userRequest.Password.HashPassword();
-
-        var user = new User
-        {
-            Username = userRequest.Username,
-            Password = savedPasswordHash
-        };
-
-        await _userRepository.CreateUserAsync(user);
-
-        return Ok(user);
+        return await _usersService.CreateUser(userRequest);
     }
 
     [AllowAnonymous]
