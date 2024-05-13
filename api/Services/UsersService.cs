@@ -9,14 +9,20 @@ namespace api.Services
     {
         private readonly IUsernameInUseProcess _usernameInUseProcess;
         private readonly ICreateUserProcess _createUserProcess;
-        public UsersService(IUsernameInUseProcess usernameInUseProcess, ICreateUserProcess createUserProcess)
+        private readonly IAuthenticateUserProcess _authenticateUserProcess;
+        public UsersService(
+            IUsernameInUseProcess usernameInUseProcess, 
+            ICreateUserProcess createUserProcess, 
+            IAuthenticateUserProcess authenticateUserProcess
+            )
         {
             _usernameInUseProcess = usernameInUseProcess;
             _createUserProcess = createUserProcess;
+            _authenticateUserProcess = authenticateUserProcess;
         }
         public async Task<IActionResult> CreateUser(UserCreateRequest userRequest)
         {
-            bool usernameInUse = await _usernameInUseProcess.Check(userRequest.Username);
+            var usernameInUse = await _usernameInUseProcess.Check(userRequest.Username);
 
             if (usernameInUse)
             {
@@ -28,8 +34,17 @@ namespace api.Services
             return new OkObjectResult(user);
         }
 
-        public Task<IActionResult> LoginUser(UserLoginRequest loginRequest)
+        public async Task<IActionResult> LoginUser(UserLoginRequest loginRequest)
         {
+            var user = await _authenticateUserProcess.Authenticate(loginRequest);
+
+            if (user == null)
+            {
+                return new UnauthorizedObjectResult("Invalid password");
+            }
+
+
+
             throw new NotImplementedException();
         }
     }

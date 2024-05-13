@@ -9,6 +9,8 @@ namespace api.Processes
         {
             services.AddScoped<IUsernameInUseProcess, UsernameInUseProcess>();
             services.AddScoped<ICreateUserProcess, CreateUserProcess>();
+
+            services.AddScoped<IAuthenticateUserProcess, AuthenticateUserProcess>();
         }
     }
 }
