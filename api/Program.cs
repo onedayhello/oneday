@@ -44,8 +44,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-ServicesDI.RegisterServices(builder.Services);
-ProcessesDI.RegisterProcesses(builder.Services);
+builder.Services.AddProcesses();
+
+builder.Services.AddServices();
 
 builder.Services.AddAuthentication(options =>
 {

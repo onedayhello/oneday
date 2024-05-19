@@ -2,11 +2,12 @@
 
 namespace api.Services
 {
-    public class ServicesDI
+    public static class ServicesDepInj
     {
-        public static void RegisterServices(IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IUsersService, UsersService>();
+            return services;
         }
     }
 }
