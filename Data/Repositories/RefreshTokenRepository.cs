@@ -1,8 +1,8 @@
-using api.Data.Models;
-using api.Data.Repositories.Interfaces;
+using Data.Models;
+using Data.Repositories.Interfaces;
 using MongoDB.Driver;
 
-namespace api.Data.Repositories
+namespace Data.Repositories
 {
     public class RefreshTokenRepository : IRefreshTokenRepository
     {

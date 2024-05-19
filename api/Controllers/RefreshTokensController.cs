@@ -1,8 +1,8 @@
 using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using api.Data.Models;
-using api.Data.Repositories.Interfaces;
+using Data.Models;
+using Data.Repositories.Interfaces;
 
 namespace api.Controllers;
 

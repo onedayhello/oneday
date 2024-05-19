@@ -1,4 +1,4 @@
-﻿using api.Data.Models;
+﻿using Data.Models;
 
 namespace api.Processes.Users.Interfaces
 {

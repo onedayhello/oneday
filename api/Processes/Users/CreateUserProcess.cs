@@ -1,5 +1,5 @@
-﻿using api.Data.Models;
-using api.Data.Repositories.Interfaces;
+﻿using Data.Models;
+using Data.Repositories.Interfaces;
 using api.Processes.Users.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;

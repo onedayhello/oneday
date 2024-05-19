@@ -1,6 +1,6 @@
-using api.Data.Models;
+using Data.Models;
 
-namespace api.Data.Repositories.Interfaces
+namespace Data.Repositories.Interfaces
 {
     public interface IRefreshTokenRepository
     {

@@ -1,4 +1,4 @@
-﻿using api.Data.Repositories.Interfaces;
+﻿using Data.Repositories.Interfaces;
 using api.Processes.Users.Interfaces;
 
 namespace api.Processes.Users

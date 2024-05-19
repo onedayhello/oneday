@@ -1,4 +1,4 @@
-﻿using api.Data.Repositories.Interfaces;
+﻿using Data.Repositories.Interfaces;
 using api.Processes.Tokens.Interfaces;
 
 namespace api.Processes.Tokens
