@@ -8,14 +8,11 @@ namespace api.Controllers;
 public class RefreshTokensController : ControllerBase
 {
     private readonly IRefreshTokensService _refreshTokensService;
-    private readonly IConfiguration _config;
 
     public RefreshTokensController(
-        IConfiguration config,
         IRefreshTokensService refreshTokenService
         )
     {
-        _config = config;
         _refreshTokensService = refreshTokenService;
     }
 
