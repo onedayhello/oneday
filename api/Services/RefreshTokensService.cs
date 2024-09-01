@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime.Internal;
-using api.Processes.Tokens.Interfaces;
+﻿using api.Processes.Tokens.Interfaces;
 using api.Services.Interfaces;
-using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
