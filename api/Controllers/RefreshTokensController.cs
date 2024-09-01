@@ -1,8 +1,5 @@
-using api.ExtensionMethods;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using Data.Models;
-using Data.Repositories.Interfaces;
+using api.Services.Interfaces;
 
 namespace api.Controllers;
 
@@ -10,40 +7,27 @@ namespace api.Controllers;
 [Route("[controller]")]
 public class RefreshTokensController : ControllerBase
 {
-    private readonly IRefreshTokenRepository _refreshTokenRepository ;
+    private readonly IRefreshTokensService _refreshTokensService;
     private readonly IConfiguration _config;
 
-    public RefreshTokensController(IConfiguration config, IRefreshTokenRepository refreshTokenRepository)
+    public RefreshTokensController(
+        IConfiguration config,
+        IRefreshTokensService refreshTokenService
+        )
     {
-        _refreshTokenRepository = refreshTokenRepository;
         _config = config;
+        _refreshTokensService = refreshTokenService;
     }
 
     [HttpPost("refresh-access-token")]
     public async Task<IActionResult> RefreshAccessToken(RefreshTokenRequest refreshRequest)
     {
-        if (!Request.Cookies.TryGetValue("refreshToken", out string? refreshTokenValue))
-        {
-            return Unauthorized();
-        }
-
-        RefreshToken refreshToken = await _refreshTokenRepository.GetRefreshTokenByUserIdAsync(refreshRequest.UserId);
-
-        if (refreshToken == null || refreshToken.ExpiresAt <= DateTime.Now || !String.Equals(refreshToken.Token, refreshTokenValue))
-        {
-            return Unauthorized();
-        }
-
-        var newAccessToken = refreshToken.UserId.GenerateJwt(_config["JWT:Key"]);
-
-        return Ok(new JwtSecurityTokenHandler().WriteToken(newAccessToken));
+        return await _refreshTokensService.RefreshAccessToken(refreshRequest, HttpContext);
     }
 
     [HttpPost("revoke-refresh-token")]
     public async Task<IActionResult> RevokeRefreshToken(RevokeTokenRequest revokeTokenRequest)
     {
-        await _refreshTokenRepository.DeleteRefreshTokenAsync(revokeTokenRequest.UserId);
-
-        return Ok();
+        return await _refreshTokensService.RevokeRefreshToken(revokeTokenRequest);
     }
 }

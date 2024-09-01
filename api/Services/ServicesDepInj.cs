@@ -7,6 +7,7 @@ namespace api.Services
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRefreshTokensService, RefreshTokensService>();
             return services;
         }
     }

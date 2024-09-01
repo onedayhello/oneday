@@ -14,6 +14,7 @@ namespace api.Processes
             services.AddScoped<IAuthenticateUserProcess, AuthenticateUserProcess>();
 
             services.AddScoped<IGenerateTokenProcess, GenerateTokenProcess>();
+            services.AddScoped<IRefreshAccessTokenProcess, RefreshAccessTokenProcess>();
             services.AddScoped<IDeleteRefreshTokenProcess, DeleteRefreshTokenProcess>();
             services.AddScoped<IGenerateRefreshTokenProcess, GenerateRefreshTokenProcess>();
             return services;
